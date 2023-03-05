@@ -7,6 +7,9 @@ public class ClickAndDrag : MonoBehaviour
     // Check if mouse clicked
     bool clicked = false;
 
+    // Check if game is over/lost
+    bool gameOver = false;
+
     public GameObject theCube;
 
     // Speed
@@ -25,33 +28,40 @@ public class ClickAndDrag : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (!gameOver)
         {
-            if (!clicked)
+            if (Input.GetMouseButton(0))
             {
-                clicked = true;
-                mouseInitialPos = Input.mousePosition;
+                if (!clicked)
+                {
+                    clicked = true;
+                    mouseInitialPos = Input.mousePosition;
+                }
+
+                // Direction the mouse dragging to
+                dir = mouseInitialPos - Input.mousePosition;
+
+                // Direction in 2D
+                Vector3 twoDdirection = new Vector3(dir.x, 0, dir.y);
+
+                twoDdirection.Normalize();
+
+                // Rotate the character to the going direction
+                Quaternion rotation = Quaternion.LookRotation(Vector3.zero - twoDdirection, Vector3.up);
+                theCube.transform.rotation = rotation;
+
+                // Move the cube
+                theCube.transform.position -= twoDdirection * speed;
+                //Debug.Log("Pressed");
             }
-
-            // Direction the mouse dragging to
-            dir = mouseInitialPos - Input.mousePosition;
-
-            // Direction in 2D
-            Vector3 twoDdirection = new Vector3(dir.x, 0, dir.y);
-
-            twoDdirection.Normalize();
-
-            // Move the cube
-            theCube.transform.position -= twoDdirection*speed;
-            //Debug.Log("Pressed");
-        }
-        else
-        {
-            // Refresh the variables after releasing the mouse
-            clicked = false;
-            mouseInitialPos = Vector3.zero;
-            dir = Vector3.zero;
-            //Debug.Log("Not pressed");
+            else
+            {
+                // Refresh the variables after releasing the mouse
+                clicked = false;
+                mouseInitialPos = Vector3.zero;
+                dir = Vector3.zero;
+                //Debug.Log("Not pressed");
+            }
         }
     }
 }
